@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Prepare the IOC files for processing
-sed 's/\r//' iocdomains > iocdomains_no_cr.txt
-sed 's/\r//' iocips > iocips_no_cr.txt
+sed 's/\r//' iocdomains.txt > iocdomains_no_cr.txt
+sed 's/\r//' iocips.txt > iocips_no_cr.txt
 
 # Set up script parameters
 input1="./iocips_no_cr.txt"
