@@ -1,11 +1,16 @@
 #!/bin/bash
 
+# Prepare the IOC files for processing
+sed 's/\r//' iocdomains > iocdomains_no_cr.txt
+sed 's/\r//' iocips > iocips_no_cr.txt
+
+# Set up script parameters
 input1="./iocips_no_cr.txt"
 input2="./iocdomains_no_cr.txt"
 sid=1000003
 
+# Echo out ICMP test rule
 echo "# Test rules"
-# Echo out the ICMP test rule
 echo "alert icmp any any <> any any (msg:\"ICMP Test\"; sid: 1000001;)"
 echo ""
 
