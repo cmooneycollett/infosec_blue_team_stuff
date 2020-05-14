@@ -1,3 +1,37 @@
+# Copyright 2020, Connor Mooney-Collett (connor.mooneycollett@gmail.com0
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+# #####
+#
+# NOTE: execute script using python3
+#
+# gen_snort_alerts.py - generate Snort alerts based on lists of IOC IP addresses
+#                       and domain names. Snort alerts generated are printed to
+#                       stdout.
+# - Requires list of IP addresses (iocips.txt) and domain names (iocdomains.txt)
+#   to be in same folder as script
+# - Example usage - to create new list of Snort rules:
+#   - python3 gen_snort_alerts.py --name APT1 > /etc/nsm/rules/local.rules
+# - Check Snort rules are valid before updating with:
+#   - sudo snort -Tc /etc/nsm/rules/local.rules
+
 import argparse
 
 def main():
