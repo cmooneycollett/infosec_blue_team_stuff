@@ -31,11 +31,12 @@ def main():
     for line in domain_ioc_file.readlines():
         line = line.strip() # Remove leading and training whitespace
         url_elements = line.split('.')
-        content_str = 'content:\"{}\";'.format(line)
+        content_str = ''
         for elem in url_elements:
             if len(elem) == 0: # Ignore blank entries
                 continue
             content_str += ' content:\"{}\";'.format(elem)
+        content_str = content_str[1:]
         print('alert udp any any -> any any (msg:\"BADNESS - Detected {} IOC - DNS req for {}\"; {} sid: {};)'.format(apt_name, line, content_str, sid))
         sid += 1
     print()
