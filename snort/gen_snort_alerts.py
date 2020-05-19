@@ -1,3 +1,4 @@
+################################################################################
 # Copyright 2020, Connor Mooney-Collett (connor.mooneycollett@gmail.com)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -17,8 +18,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-#
-# #####
+################################################################################
 #
 # NOTE: execute script using python3
 #
@@ -31,6 +31,8 @@
 #   - python3 gen_snort_alerts.py --name APT1 > /etc/nsm/rules/local.rules
 # - Check Snort rules are valid before updating with:
 #   - sudo snort -Tc /etc/nsm/rules/local.rules
+#
+################################################################################
 
 import argparse
 
