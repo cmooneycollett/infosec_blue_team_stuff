@@ -18,7 +18,7 @@ Import-Csv $baseline -Delimiter "," | ForEach-Object {
     }
 }
 # Check the target dir
-Get-ChildItem $target_dir | ForEach-Object {
+Get-ChildItem -Recurse $target_dir | ForEach-Object {
     Get-FileHash $_.FullName -Algorithm $hash_alg |
     Where-Object {
         !$baseline_table.ContainsKey($_.hash)
