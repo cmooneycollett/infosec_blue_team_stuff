@@ -22,5 +22,5 @@ ForEach ($run_key_path in $run_key_paths) {
         continue
     }
     Write-Output $run_key_path
-    $run_key | Format-List
+    Write-Output $run_key | Format-List
 }
