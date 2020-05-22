@@ -6,7 +6,14 @@ $run_key_paths = @(
     "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunServicesOnce",
     "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run",
     "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run",
-    "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce"
+    "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce",
+    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Run",
+    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\RunOnce",
+    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\RunServices",
+    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\RunServicesOnce",
+    "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Policies\Explorer\Run",
+    "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Run",
+    "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\RunOnce"
 )
 # Check each of the run keys
 ForEach ($run_key_path in $run_key_paths) {
