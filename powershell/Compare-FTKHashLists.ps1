@@ -1,4 +1,4 @@
-﻿# User to provide path to baseline and live hash lists
+# User to provide path to baseline and live hash lists
 param (
         [Parameter(Mandatory=$true)]
         [string] $baseline,
@@ -7,8 +7,8 @@ param (
         [string] $live
 )
 # Open CSV files
-$baseline_import = Import-Csv -Path $baseline | sort
-$live_import = Import-Csv -Path $live | sort
+$baseline_import = Import-Csv -Path $baseline | Sort-Object
+$live_import = Import-Csv -Path $live | Sort-Object
 # Add baseline entries to dict - Key: SHA1, Entry: FileNames
 $baseline_entries = @{}
 $i = 0
