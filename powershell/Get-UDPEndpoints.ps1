@@ -1,6 +1,6 @@
 ﻿# Get set of all processes
 $Processes = @{}
-Get-Process -IncludeUserName | % { $Processes.Add($_.Id, $_) }
+Get-Process -IncludeUserName | ForEach-Object { $Processes.Add($_.Id, $_) }
 
 # Get UDP endpoints
 Get-NetUDPEndpoint |
