@@ -3,15 +3,20 @@ $baseline_sha256 = @{}
 $last_hash = ""
 $last_path = ""
 Write-Output "##################################################"
-Write-Output "[*] Building the baseline dictionary..."
-# Process lines based on if they are filepath of file-hash (0 - file-hash, 1 - file-type)
+Write-Output "[*] Building the baseline dictionary and baseline CSV..."
+# Process baseline file lines based on if they are filepath of file-hash (0 - file-hash, 1 - file-type)
 $line_type = 0
+# Add header to new CSV-format baseline file
+Remove-Item -Path "C:\Users\DCI Student\Desktop\baseline.csv"
+Add-Content -Path "C:\Users\DCI Student\Desktop\baseline.csv" -Value "SHA256,Filepath"
+# Process the baseline file to generate the baseline dict
 Get-Content "C:\Users\DCI Student\Desktop\System32baseline.txt" | ForEach-Object {
     if ($line_type -eq 0) { # Got a filepath line - now we have a baseline entry pair
         $last_hash = $_
     } else { # File hash line - still need the filepath on next line
         $last_path = $_
         $baseline_sha256.Add($last_path, $last_hash)
+        Add-Content -Path "C:\Users\DCI Student\Desktop\baseline.csv" -Value ([string]::Format("{0},{1}", $last_hash, $last_path))
     }
     # Move along the line-type and keep to 0 or 1
     $line_type += 1
