@@ -4,13 +4,18 @@ $last_hash = ""
 $last_path = ""
 Write-Output "##################################################"
 Write-Output "[*] Building the baseline dictionary..."
-Get-Content "System32baseline.txt" | ForEach-Object {
-    if ($_ -match "C:") { # Got a filepath line - now we have a baseline entry pair
+# Process lines based on if they are filepath of file-hash (0 - file-hash, 1 - file-type)
+$line_type = 0
+Get-Content "C:\Users\DCI Student\Desktop\System32baseline.txt" | ForEach-Object {
+    if ($line_type -eq 0) { # Got a filepath line - now we have a baseline entry pair
+        $last_hash = $_
+    } else { # File hash line - still need the filepath on next line
         $last_path = $_
         $baseline_sha256.Add($last_path, $last_hash)
-    } else { # File hash line - still need the filepath on next line
-        $last_hash = $_
     }
+    # Move along the line-type and keep to 0 or 1
+    $line_type += 1
+    $line_type %= 2
 }
 # Ex 3.3-12 Q6 --- check for files in baseline
 $checks = (
