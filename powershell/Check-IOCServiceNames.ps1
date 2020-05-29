@@ -27,11 +27,11 @@ param (
     [string] $in_file
 )
 # Initialise array to hold IOC service names
-$ioc_service_names = @{}
+$ioc_service_names = New-Object System.Collections.Generic.HashSet[String]
 Get-Content -Path $in_file | ForEach-Object {
-    $ioc_service_names.Add($_, $true)
+    [void]$ioc_service_names.Add($_)
 }
 # Look for services
 Get-CimInstance Win32_Service | Where-Object {
-    $ioc_service_names.ContainsKey($_.Name)
+    $ioc_service_names.Contains($_.Name)
 } | Select-Object -Property Name, ProcessId, StartName, StartMode, State, PathName | Format-Table
