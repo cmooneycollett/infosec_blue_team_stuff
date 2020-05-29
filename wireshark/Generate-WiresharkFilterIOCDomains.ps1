@@ -7,7 +7,9 @@ $count = 0
 $display_filter = "("
 # Read each domain listed in given file and add to display filter
 Get-Content -Path $in_file | ForEach-Object {
-    $domain = $_
+    # Remove any leading or trailing whitespace
+    $domain = $_.Trim()
+    # Remove leading "period" character for domain names with redacted components
     if ($domain.StartsWith(".")) {
         $domain = $domain.Substring(1, $domain.Length - 1)
     }
