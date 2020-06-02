@@ -40,11 +40,13 @@ def main():
     # Extract command-line arguments
     parser = argparse.ArgumentParser(description='Snort alert generator - APT IOCs')
     parser.add_argument('--name', dest='apt_name', action='store', required=True, help='Name of APT')
+    parser.add_argument('--ip_file', dest='ip_file', action='store', required=True, help='List of APT IOC IP addresses')
+    parser.add_argument('--domain_file', dest='domain_file', action='store', required=True, help='List of APT IOC domains')
     args = parser.parse_args()
     apt_name = args.apt_name
     # Open IOC files
-    ip_ioc_file = open('iocips.txt', 'r')
-    domain_ioc_file = open('iocdomains.txt', 'r')
+    ip_ioc_file = open(args.ip_file, 'r')
+    domain_ioc_file = open(args.domain_file, 'r')
     # Initialise alert SID
     sid = 1000001
     # Print out the ICMP test rule
