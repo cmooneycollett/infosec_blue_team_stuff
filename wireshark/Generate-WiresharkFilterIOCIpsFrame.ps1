@@ -10,9 +10,9 @@ Get-Content -Path $in_file | ForEach-Object {
     # Remove any leading or trailing whitespace
     $ip_addr = $_.Trim()
     if ($count -eq 0) {
-        $display_filter += [String]::Format("frame contains == ""{0}""", $ip_addr)
+        $display_filter += [String]::Format("frame matches == ""{0}""", $ip_addr)
     } else {
-        $display_filter += [String]::Format(" || frame contains == ""{0}""", $ip_addr)
+        $display_filter += [String]::Format(" || frame matches == ""{0}""", $ip_addr)
     }
     $count += 1
 }

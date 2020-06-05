@@ -14,9 +14,9 @@ Get-Content -Path $in_file | ForEach-Object {
         $domain = $domain.Substring(1, $domain.Length - 1)
     }
     if ($count -eq 0) {
-        $display_filter += [String]::Format("frame contains ""{0}""", $domain)
+        $display_filter += [String]::Format("frame matches ""{0}""", $domain)
     } else {
-        $display_filter += [String]::Format(" || frame contains ""{0}""", $domain)
+        $display_filter += [String]::Format(" || frame matches ""{0}""", $domain)
     }
     $count += 1
 }

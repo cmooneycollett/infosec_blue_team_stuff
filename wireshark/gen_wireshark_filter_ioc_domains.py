@@ -31,7 +31,7 @@ input_file = args.input_file
 ioc_domain_file = open(input_file)
 # Initialise count and display filter
 count = 0
-display_filter = 'dns.flags.response == 0 && ('
+display_filter = '('
 # Read lines from file to build up display filter
 for line in ioc_domain_file.readlines():
     # Strip leading and trailing whitespace, and single leading dot if present
@@ -40,9 +40,9 @@ for line in ioc_domain_file.readlines():
         line = line[1:]
     # Build up display filter
     if count == 0:
-        display_filter += 'frame contains \"{}\"'.format(line)
+        display_filter += 'frame matches \"{}\"'.format(line)
     else:
-        display_filter += ' || frame contains \"{}\"'.format(line)
+        display_filter += ' || frame matches \"{}\"'.format(line)
     count += 1
 # Append closing parenthesis to complete expression
 display_filter += ')'
