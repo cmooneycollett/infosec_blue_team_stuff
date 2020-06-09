@@ -38,10 +38,9 @@ Get-Content -Path ".\files.txt" | % {
 }
 
 # Determine hosts on target network via ping scan
-$alive_hosts = @("10.10.10.56", "10.10.10.83", "10.10.10.107") 
+$alive_hosts = @() 
 $exclude_hosts = @("10.10.10.1", "10.10.10.20", "10.10.10.100") # Win10 Admin VM and Win10 NAS VM
 Write-Host -ForegroundColor Yellow "[?] Conducting ping sweep of 10.10.10.0/24 subnet for host discovery ..."
-<#
 ForEach ($i in 1..254) {
     $ip_addr = "10.10.10.$($i)"
     $ping_result = ping -n 1 -w 1 $ip_addr
@@ -55,7 +54,6 @@ ForEach ($i in 1..254) {
     }
     Write-Progress -Activity "Conducting ping sweep of subnet..." -PercentComplete (($i / 254) * 100)
 }
-#>
 
 # Prepare for remote connections
 Write-Host -ForegroundColor Yellow "[?] Preparing for remote connections ..."
