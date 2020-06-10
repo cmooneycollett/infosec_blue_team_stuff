@@ -48,7 +48,7 @@ ForEach ($file in $all_files) {
 Write-Host "[?] Q2 - $($num_ads_files)"
 
 # Q3 - sort the ADS files by file name (needed in alphabetical order after this point)
-[void] ($ads_files | Sort-Object -Property Name)
+$ads_files = $ads_files | Sort-Object -Property Name
 Write-Host "[?] Q3 - $(($ads_files | ForEach-Object {$_.Name}) -join ", ")"
 
 # Q4 - get SHA1 filehash for all files containing an ADS. Hash is from the primary $DATA stream
