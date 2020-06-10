@@ -23,7 +23,7 @@ function Get-NumNTFSFileStreams {
         [string] $file_path
     )
     $streams = Get-Item -Path $file_path -Stream * | Select-Object -ExpandProperty Stream
-    return $streams | Measure-Object | Select-Object -ExpandProperty Count
+    return $streams.Count
 }
 
 ##### Exercise script
@@ -32,7 +32,7 @@ function Get-NumNTFSFileStreams {
 $all_files = Get-ChildItem -Path "C:\Users\DCI Student\Documents\IdentifyDataExfil_ADS" -Recurse
 
 # Q1 - count number of RAR and ZIP files
-$count = $all_files | Where-Object {$_.Extension -in (".rar",".zip")} | Measure-Object | Select-Object -ExpandProperty Count
+$count = ($all_files | Where-Object {$_.Extension -in (".rar",".zip")}).Count
 Write-Host "[?] Q1 - $($count)"
 
 # Q2 - count number of files with an ADS
@@ -54,7 +54,7 @@ Write-Host "[?] Q3 - $(($ads_files | ForEach-Object {$_.Name}) -join ", ")"
 # Q4 - get SHA1 filehash for all files containing an ADS. Hash is from the primary $DATA stream
 $Q4_hashes = @()
 ForEach ($file in $ads_files) {
-    $sha1_hash = Get-FileHash -Path $file.FullName -Algorithm SHA1 | Select-Object -ExpandProperty Hash
+    $sha1_hash = (Get-FileHash -Path $file.FullName -Algorithm SHA1).Hash
     $Q4_hashes += $sha1_hash.Substring($sha1_hash.length - 4, 4)
 }
 Write-Host "[?] Q4 - $($Q4_hashes -join ", ")"
@@ -63,6 +63,8 @@ Write-Host "[?] Q4 - $($Q4_hashes -join ", ")"
 $archive_file_sigs = @{
     "rar" = "52617221"
     "zip" = "504B0304"
+    "zip_empty" = "504B0506"
+    "zip_spanned" = "504B0708"
 }
 # Mappings for Ex Q to applicable ADS
 $ads_q = @{
@@ -74,7 +76,7 @@ $ads_q = @{
 ForEach ($question in $ads_q.Keys) {
     # Extract the contents of the ADS into a separate file
     $ads_index = $ads_q[$question][1]
-    $stream_name = Get-Item -Path $ads_files[$ads_index].FullName -Stream * | Where-Object {$_.Stream -notmatch ":\`$DATA"} | Select-Object -ExpandProperty Stream
+    $stream_name = (Get-Item -Path $ads_files[$ads_index].FullName -Stream * | Where-Object {$_.Stream -notmatch ":\`$DATA"}).Stream
     $out_file = ".\$($ads_q[$question][0])_file.bin"
     Get-Content -Path $ads_files[$ads_index].FullName -Stream $stream_name -Encoding Byte | Set-Content -Path $out_file -Encoding Byte
     # Compare file sig
@@ -102,6 +104,15 @@ ForEach ($file in ($all_files | Where-Object {$_.Extension -notin (".txt")})) {
     ForEach ($stream in $streams) {
         $signature = Get-FileSignature -file_path $file.FullName -stream_name $stream
         [void] $non_txt_sigs.Add($signature)
+    }
+}
+# Print out non-text sigs found
+Write-Host "[!] Non-txt file sigs found in target dir:"
+ForEach ($sig in $non_txt_sigs) {
+    if ($archive_file_sigs.Values.Contains($sig)) {
+        Write-Host "    -> SIG: $($archive_file_sigs.Keys | Where-Object {$archive_file_sigs[$_] -eq $sig}) - 0x$($sig)"
+    } else {
+        Write-Host "    -> SIG: [not listed] - 0x$($sig)"
     }
 }
 
