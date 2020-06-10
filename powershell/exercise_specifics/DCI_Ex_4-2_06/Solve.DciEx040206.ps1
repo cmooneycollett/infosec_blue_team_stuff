@@ -5,14 +5,8 @@ function Get-FileSignature {
         [string] $file_path,
         [string] $stream_name = ':$DATA'
     )
-    $hex_header = ""
-    Get-Content -Path $file_path -Stream $stream_name -Encoding Byte -TotalCount 4 | ForEach-Object {
-        if (("{0:X}" -f $_).length -eq 1) {
-            $hex_header += "0{0:X}" -f $_
-        } else {
-            $hex_header += "{0:X}" -f $_
-        }
-    }
+    $bytes = Get-Content -Path $file_path -Stream $stream_name -Encoding Byte -TotalCount 4
+    $hex_header = ($bytes | ForEach-Object {$_.ToString("X2")}) -join ""
     return $hex_header
 }
 
