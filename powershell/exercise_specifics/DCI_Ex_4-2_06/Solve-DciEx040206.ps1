@@ -93,7 +93,6 @@ ForEach ($question in $ads_q.Keys) {
         $contents = Get-Content -Path $out_file
         Write-Host "    -> $($contents)"
     }
-    $ads_index += 1
 }
 
 # Generate signatures from all non-txt files, covering all data streams
