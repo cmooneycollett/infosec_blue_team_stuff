@@ -6,7 +6,7 @@ $creds = Get-Credential
 
 # Read in IOC Registry keys file
 $ioc_reg = @()
-Get-Content -Path ".\reg.txt" | % {
+Get-Content -Path ".\reg.txt" | ForEach-Object {
     $splits = $_.Split("\")
     $reg_key = ""
     ForEach ($i in 0..($splits.Length - 1)) {
@@ -26,7 +26,7 @@ Get-Content -Path ".\reg.txt" | % {
 
 # Read in IOC file list
 $ioc_files = New-Object System.Collections.Generic.HashSet[String]]
-Get-Content -Path ".\files.txt" | % {
+Get-Content -Path ".\files.txt" | ForEach-Object {
     $file = $_
     # Replace any of the problematic envars with ones that will expand correctly on remotes
     if ($file -match "%PROGRAMS%") {
@@ -44,8 +44,12 @@ workflow ParallelPingSweep (
     [string[]] $ioc_ips,
     [string[]] $exclude_hosts
 ) {
+    # Hide the workflow progress bar
+    $ProgressPreference = "SilentlyContinue"
+    # Conduct ping sweep in parallel, max. 50 pings concurrently
     ForEach -Parallel -ThrottleLimit 50 ($i in 1..254) {
         $ip_addr = "10.10.10.$($i)"
+        # Ping the target once and check if a reply was received
         $ping_result = ping -n 1 -w 1 $ip_addr
         if ($ping_result -match "Received = 1") {
             if (!($exclude_hosts.Contains($ip_addr))) {
@@ -96,7 +100,7 @@ ForEach ($ip_addr in $alive_hosts) {
         }
 
         # Check if system has any established TCP connections to an IOC IP address
-        Get-NetTCPConnection | % {
+        Get-NetTCPConnection | ForEach-Object {
             $remote_ip = $_.RemoteAddress
             if ($ioc_ips.Contains($remote_ip)) {
                 Write-Host -ForegroundColor Red "    -> Found IP IOC: $($remote_ip)"
