@@ -25,7 +25,7 @@ ForEach ($target_ip in $target_ips) {
         Get-ScheduledTask | Format-Table
         #>
 
-        # Create list of registry Run* subkeys
+        # Check Run* keys on the target machine
         $run_key_paths = @(
             "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
             "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce",
@@ -58,8 +58,7 @@ ForEach ($target_ip in $target_ips) {
             Write-Output $run_key_path
             Write-Output $run_key | Format-List
         }
-
-
-        # Stuff goes here
-    } # | Set-Content -Path ".\$($target_ip)_Q2.txt"
+        # Check the "C:\tmp" directory for other files that may have been created or downloaded by the adversary
+        Get-ChildItem -Path "C:\tmp" -ErrorAction SilentlyContinue | Format-Table -AutoSize
+    }
 }

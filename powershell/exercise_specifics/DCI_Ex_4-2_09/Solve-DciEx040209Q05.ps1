@@ -19,9 +19,24 @@ Set-Item wsman:\localhost\client\trustedhosts -Value $trusted_hosts -Force
 ForEach ($target_ip in $target_ips) {
     Write-Host -ForegroundColor Yellow "[?] Conducting interrogation of host $($target_ip)"
     Invoke-Command -ComputerName $target_ip -Credential $creds -ScriptBlock {
+        <#
+        Get-CimInstance Win32_Process | Format-Table
+        Get-CimInstance Win32_Service | Select-Object -Property Name, ProcessId, StartName, StartMode, State, PathName | Format-Table
+        Get-EventLog -List
+        #>
 
-        # Get-ChildItem -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup" #| ? {$_ -isnot [System.IO.DirectoryInfo]}
-        Get-ChildItem -Path "C:\" -Recurse | ? {$_.FullName -match 'Startup'}
+        Get-CimInstance Win32_StartupCommand | Select-Object Name,Command,User,Location | Format-Table
 
+        # Check hosts file
+        ###Get-Content -Path "C:\Windows\System32\Drivers\etc\hosts" | ? {$_.StartsWith("#") -eq $false}
+
+        Write-Host "##########"
+
+        # Check scheduled tasks
+        ###Get-ScheduledTask | Format-Table -AutoSize
+
+        # Check running processes
+
+        # Check services
     } 
 }

@@ -1,4 +1,10 @@
-﻿# Grab credentials to connect to remote hosts with
+﻿param (
+    [string] $ioc_domains_file = "C:\Users\DCI Student\Desktop\ex_4-2_09\IOC_lists\files\ioc_domains.txt",
+    [string] $ioc_ips_file = "C:\Users\DCI Student\Desktop\ex_4-2_09\IOC_lists\files\ioc_ips.txt",
+    [string] $ioc_hosts_entries_file = "C:\Users\DCI Student\Desktop\ex_4-2_09\IOC_lists\files\ioc_hosts.txt"
+)
+
+# Grab credentials to connect to remote hosts with
 $creds = Get-Credential
 
 # Initialise target IPs
@@ -15,50 +21,53 @@ $target_ips = @(
 $trusted_hosts = $target_ips -join ","
 Set-Item wsman:\localhost\client\trustedhosts -Value $trusted_hosts -Force
 
+# Read in IOC lists - domain names and IP addresses
+$ioc_domains = Get-Content -Path $ioc_domains_file
+$ioc_ips = Get-Content -Path $ioc_ips_file
+$ioc_hosts_entries = Get-Content -Path $ioc_hosts_entries_file | % {$_ -replace "\s+", " "}
+
 # Check each of the target machines
 ForEach ($target_ip in $target_ips) {
     Write-Host -ForegroundColor Yellow "[?] Conducting interrogation of host $($target_ip)"
-    Invoke-Command -ComputerName $target_ip -Credential $creds -ScriptBlock {
-        $ioc_dns = (
-            "ctable.com",
-            "nestlere.com",
-            "unina2.net",
-            "shwoo.gov",
-            "msa.hinet.net",
-            "news.rinpocheinfo.com",
-            "ellismikepage.info",
-            "lifehealthsanfrancisco2015.com",
-            "pgallerynow.info",
-            "dmforever.biz",
-            "msoutexchange.us",
-            "junomaat81.us",
-            "outlookscansafe.net",
-            "nickgoodsite.co.uk",
-            "uae.kim",
-            "updato.systes.net",
-            "removalmalware.servecounterstrike.com",
-            "mailchat.zapto.org",
-            "outlookexchange.net"
+    Invoke-Command -ComputerName $target_ip -Credential $creds -ArgumentList $ioc_domains,$ioc_ips,$ioc_hosts_entries -ScriptBlock {
+        param (
+            [string[]] $ioc_domains,
+            [string[]] $ioc_ips,
+            [string[]] $ioc_hosts_entries
         )
-        $ioc_ip = (
-            "98.139.183.183",
-            "11.76.174.166",
-            "123.125.114.144",
-            "84.246.78.212",
-            "128.107.176.140",
-            "178.105.226.163",
-            "148.212.247.185",
-            "201.70.116.57",
-            "93.212.59.21",
-            "93.212.59.28"
-        )
+        # Get contents of the DNS client cache with a IP address or domain name matching an ioc
+        Write-Host "##### DNS Client Cache matches"
+        $results = Get-DnsClientCache | ? {$ioc_domains.Contains($_.Entry) -or $ioc_ips.Contains($_.Entry) -or $ioc_domains.Contains($_.Data) -or $ioc_ips.Contains($_.Data)}
+        $results | Format-Table -AutoSize
+        Write-Host ""
 
+        # Check remote address for any network connections against IOC IP addresses
+        Write-Host "##### Network connection matches"
+        Get-NetTCPConnection | ? {
+            $ioc_ips.Contains($_.RemoteAddress)
+        }
+        Write-Host ""
 
-        $results = Get-DnsClientCache | ? {$ioc_dns.Contains($_.Entry) -or $ioc_ip.Contains($_.Data)}
-        # $results | Format-List
-        Get-Content -Path "C:\Windows\System32\Drivers\etc\hosts"
+        # Get entries from hosts file
+        Write-Host "##### Hosts file matches"
 
-
-        # Stuff goes here
-    } # | Set-Content -Path ".\$($target_ip)_Q2.txt"
+        Get-Content -Path "C:\Windows\System32\Drivers\etc\hosts" | ? {$_.StartsWith("#") -eq $false} | % {$_ -replace "\s+", " "} | % {
+            ForEach ($ioc_hosts_entry in $ioc_hosts_entries) {
+                if ($_ -match $ioc_hosts_entry) {
+                    Write-Host "     -> Hosts entry match: $($_)"
+                }
+            }
+            ForEach ($ioc_ip in $ioc_ips) {
+                if ($_ -match $ioc_ip) {
+                    Write-Host "     -> Hosts entry match (IP): $($_)"
+                }
+            }
+            ForEach ($ioc_domain in $ioc_domains) {
+                if ($_ -match $ioc_domain) {
+                    Write-Host "     -> Hosts entry match (domain): $($_)"
+                }
+            }
+        }
+        Write-Host ""
+    }
 }

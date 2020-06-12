@@ -19,13 +19,10 @@ Set-Item wsman:\localhost\client\trustedhosts -Value $trusted_hosts -Force
 ForEach ($target_ip in $target_ips) {
     Write-Host -ForegroundColor Yellow "[?] Conducting interrogation of host $($target_ip)"
     Invoke-Command -ComputerName $target_ip -Credential $creds -ScriptBlock {
-        Get-LocalUser | Select-Object -Property Name, Enabled, SID | Format-Table -AutoSize
-    
-        Get-LocalGroupMember -Group "Administrators" | Format-Table -AutoSize
 
-        # Look for events with ID 4732 - "A member was added to a security-enabled local group
-        Get-EventLog -LogName Security -InstanceId 4732 -ErrorAction SilentlyContinue | Format-List
+        #Get-ChildItem -Path "C:\TMP\sys.txt" -ErrorAction SilentlyContinue | Get-Content
+        $dns_cache = Get-DnsClientCache
+        $dns_cache | Format-Table -AutoSize
 
-        Start-Sleep -Seconds 1
-    }
+    } 
 }

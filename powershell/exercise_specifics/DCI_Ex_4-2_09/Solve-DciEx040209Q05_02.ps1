@@ -11,6 +11,12 @@ $target_ips = @(
     "172.16.12.12",
     "172.16.12.13"
 )
+$ioc_sched_tasks = @(
+    "mim",
+    "sekurlsa",
+    "AT",
+    "tmp"
+)
 # Prepare for remote connection
 $trusted_hosts = $target_ips -join ","
 Set-Item wsman:\localhost\client\trustedhosts -Value $trusted_hosts -Force
@@ -18,14 +24,12 @@ Set-Item wsman:\localhost\client\trustedhosts -Value $trusted_hosts -Force
 # Check each of the target machines
 ForEach ($target_ip in $target_ips) {
     Write-Host -ForegroundColor Yellow "[?] Conducting interrogation of host $($target_ip)"
-    Invoke-Command -ComputerName $target_ip -Credential $creds -ScriptBlock {
-        Get-LocalUser | Select-Object -Property Name, Enabled, SID | Format-Table -AutoSize
-    
-        Get-LocalGroupMember -Group "Administrators" | Format-Table -AutoSize
+    Invoke-Command -ComputerName $target_ip -Credential $creds -ArgumentList $ioc_sched_tasks -ScriptBlock {
+        param (
+            [string[]] $ioc_sched_tasks
+        )
 
-        # Look for events with ID 4732 - "A member was added to a security-enabled local group
-        Get-EventLog -LogName Security -InstanceId 4732 -ErrorAction SilentlyContinue | Format-List
-
-        Start-Sleep -Seconds 1
-    }
+        # Check which target machines have executed the "nbtscan.exe" utility
+        Get-ScheduledTask | ? {$_.TaskName -in $ioc_sched_tasks}
+    } 
 }
