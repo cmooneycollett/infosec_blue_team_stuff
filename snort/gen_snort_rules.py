@@ -39,7 +39,7 @@ import argparse
 def main():
     # Extract command-line arguments
     parser = argparse.ArgumentParser(description='Snort alert generator - APT IOCs')
-    parser.add_argument('--name', dest='apt_name', action='store', required=True, help='Name of APT')
+    parser.add_argument('--name', dest='apt_name', action='store', required=False, default="fsociety", help='Name of APT')
     parser.add_argument('--ip_file', dest='ip_file', action='store', required=False, help='List of APT IOC IP addresses')
     parser.add_argument('--domain_file', dest='domain_file', action='store', required=False, help='List of APT IOC domains')
     parser.add_argument('--http_req_file', dest='http_req_file', action='store', required=False, help='List of APT IOC HTTP request filepaths')
